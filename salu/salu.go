@@ -2,48 +2,74 @@ package salu
 
 import (
 	"log"
+	"strconv"
 )
 
 type Salu struct {
-	entities map[string]entity
-	verbs    map[string][]verb
+	entities map[string]Entity
+	verbs    map[string][]Verb
 }
 
 func NewSalu() *Salu {
 	s := new(Salu)
-	s.entities = make(map[string]entity)
-	s.verbs = make(map[string][]verb)
+	s.entities = make(map[string]Entity)
+	s.verbs = make(map[string][]Verb)
 
-	e := make(propertyset)
+	e := make(PropertySet)
 	e["name"] = "Nathan"
 	s.entities["user"] = e
-
-	var sa stringadder
-	var v verb
-	v.PatientType = "stringliteral"
-	v.FocusType = "stringliteral"
-	v.Handler = sa
-	s.verbs["add"] = append(s.verbs["add"], v)
 
 	return s
 }
 
 func (s *Salu) Eval(verb, patient, focus string) {
+	log.Println("[eval]", verb, patient, focus)
 	p := s.interpretEntity(patient)
-	log.Println("[patient]:", p)
 
 	f := s.interpretEntity(focus)
-	log.Println("[focus]:", f)
 
 	handler, ok := s.interpretVerb(verb, p, f)
-	if !ok {
-		log.Println("[verb] appropriate", verb, "not found")
-	} else {
+	if ok {
 		result, err := handler.HandleVerb(p, f)
 		if err != nil {
-			log.Println("[verb] error:", err)
+			log.Println("[result] ERROR:", err)
 		} else {
-			log.Println("[verb]:", result)
+			log.Println("[result]", result)
 		}
 	}
+}
+
+// If an existing Entity is not found, then create Entity as a literal
+func (s *Salu) interpretEntity(estring string) Entity {
+	e, ok := s.entities[estring]
+	if !ok {
+		// not a known Entity, is it a literal?
+		if n, err := strconv.Atoi(estring); err == nil {
+			return NumberLiteral(n)
+		}
+		return StringLiteral(estring)
+	}
+	return e
+}
+
+func (s *Salu) interpretVerb(verb string, patient, focus Entity) (VerbHandler, bool) {
+	ptype := EntityType(patient)
+	ftype := EntityType(focus)
+	
+	verbs := s.verbs[verb]
+	for _, v := range verbs {
+		if v.PatientType == ptype && v.FocusType == ftype {
+			return v.Handler, true
+		}
+	}
+	
+	return nil, false
+}
+
+func (s *Salu) RegisterVerb(verb string, handler VerbHandler, patientType string, focusType string) {
+	var v Verb
+	v.PatientType = patientType
+	v.FocusType = focusType
+	v.Handler = handler
+	s.verbs[verb] = append(s.verbs[verb], v)
 }
