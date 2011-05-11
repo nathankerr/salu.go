@@ -1,7 +1,7 @@
 package salu
 
 import (
-	"log"
+	"fmt"
 	"strconv"
 )
 
@@ -23,18 +23,16 @@ func NewSalu() *Salu {
 }
 
 func (s *Salu) Eval(verb, patient, focus string) {
-	log.Println("[eval]", verb, patient, focus)
 	p := s.interpretEntity(patient)
-
 	f := s.interpretEntity(focus)
 
 	handler, ok := s.interpretVerb(verb, p, f)
 	if ok {
 		result, err := handler.HandleVerb(p, f)
 		if err != nil {
-			log.Println("[result] ERROR:", err)
+			fmt.Println("ERROR:", err)
 		} else {
-			log.Println("[result]", result)
+			fmt.Println(result)
 		}
 	}
 }
@@ -55,14 +53,14 @@ func (s *Salu) interpretEntity(estring string) Entity {
 func (s *Salu) interpretVerb(verb string, patient, focus Entity) (VerbHandler, bool) {
 	ptype := EntityType(patient)
 	ftype := EntityType(focus)
-	
+
 	verbs := s.verbs[verb]
 	for _, v := range verbs {
 		if v.PatientType == ptype && v.FocusType == ftype {
 			return v.Handler, true
 		}
 	}
-	
+
 	return nil, false
 }
 

@@ -20,3 +20,4 @@ func (s stringadder) HandleVerb(patient, focus salu.Entity) (salu.Entity, os.Err
 
 	return salu.StringLiteral(p + " " + f), nil
 }
+
