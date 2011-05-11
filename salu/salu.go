@@ -1,7 +1,6 @@
 package salu
 
 import (
-	"fmt"
 	"strconv"
 )
 
@@ -16,13 +15,13 @@ func NewSalu() *Salu {
 	s.verbs = make(map[string][]Verb)
 
 	e := make(PropertySet)
-	e["name"] = "Nathan"
+	e["name"] = StringLiteral("Nathan")
 	s.entities["user"] = e
 
 	return s
 }
 
-func (s *Salu) Eval(verb, patient, focus string) {
+func (s *Salu) Eval(verb, patient, focus string) string {
 	p := s.interpretEntity(patient)
 	f := s.interpretEntity(focus)
 
@@ -30,11 +29,12 @@ func (s *Salu) Eval(verb, patient, focus string) {
 	if ok {
 		result, err := handler.HandleVerb(p, f)
 		if err != nil {
-			fmt.Println("ERROR:", err)
+			return "ERROR: " + err.String()
 		} else {
-			fmt.Println(result)
+			return result.String()
 		}
 	}
+	return "ERROR: the verb could not be interpereted"
 }
 
 // If an existing Entity is not found, then create Entity as a literal
