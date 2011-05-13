@@ -1,22 +1,20 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
 	"io"
 	"log"
 	"net"
 	"os"
 	"salu"
-	"strings"
 )
 
 var s *salu.Salu
 
 func main() {
 	setup()
-	//console(os.Stdin, os.Stdout)
-	telnetlistener("localhost:3000")
+	console(os.Stdin, os.Stdout)
+	//telnetlistener("localhost:3000")
 }
 
 func setup() {
@@ -24,37 +22,22 @@ func setup() {
 
 	// register a stringadder
 	var sa stringadder
-	s.RegisterVerb("add", sa, "StringLiteral", "StringLiteral")
+	s.RegisterVerb("malu", sa, "StringLiteral", "StringLiteral")
 
 	// register a numberadder
 	var na numberadder
-	s.RegisterVerb("add", na, "NumberLiteral", "NumberLiteral")
+	s.RegisterVerb("malu", na, "NumberLiteral", "NumberLiteral")
 }
 
 func console(input io.Reader, output io.Writer) {
-	buffer := bufio.NewReader(input)
+	parser := salu.NewParser(input)
 
 	for {
 		fmt.Fprintf(output, "> ")
-		line, _, err := buffer.ReadLine()
-		if err != nil {
-			if err == os.EOF {
-				fmt.Println()
-				os.Exit(0)
-			}
-			panic(err)
-		}
+		sen := parser.Parse()
+		log.Println(sen)
 
-		args := strings.Split(string(line), " ", -1)
-		if len(args) != 3 {
-			fmt.Fprintln(output, "requires 3 tokens: patient verb focus")
-			continue
-		}
-		patient := args[0]
-		verb := args[1]
-		focus := args[2]
-
-		result := s.Eval(verb, patient, focus)
+		result := s.Eval(sen)
 		fmt.Fprintln(output, result)
 	}
 }

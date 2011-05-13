@@ -1,4 +1,4 @@
-package main
+package salu
 
 import (
 	"fmt"
@@ -55,7 +55,6 @@ func (l *Lexer) consume() {
 	if l.err == nil {
 		l.c = buf[0]
 	}
-	// fmt.Printf("%s", string(l.c))
 }
 
 // (CN)*CV
@@ -95,9 +94,8 @@ func (l *Lexer) wordcontinues() Token {
 func (l *Lexer) tokenize(ttype int) Token {
 	l.text = append(l.text, l.c)
 	t := Token{ttype, string(l.text)}
-	l.text = make([]byte, 1)
+	l.text = make([]byte, 0)
 	l.consume()
-	log.Println(t)
 	return t
 }
 
@@ -106,5 +104,5 @@ func (l *Lexer) String() string {
 }
 
 func (l *Lexer) Error(error string) {
-	log.Fatalf("ERROR: [%s][%s] %s\n", string(l.text), string(l.c), error)
+	log.Fatalf("ERROR (Lexer.Error): [%s][%s] %s\n", string(l.text), string(l.c), error)
 }

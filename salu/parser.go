@@ -1,4 +1,4 @@
-package main
+package salu
 
 import (
 	"io"
@@ -13,27 +13,28 @@ type Parser struct {
 func NewParser(input io.Reader) *Parser {
 	p := new(Parser)
 	p.lexer = NewLexer(input)
-	
+
 	p.consume() //Prime the parser
 	return p
 }
 
-func (p *Parser) Parse() *Sentence{
+// sentence := patient verb focus
+func (p *Parser) Parse() *Sentence {
 	sen := new(Sentence)
 	p.patient(sen)
 	p.verb(sen)
 	p.focus(sen)
 	p.match(STOP)
-	
+
 	return sen
 }
 
-func (p *Parser) match(ttype int) Token{
+func (p *Parser) match(ttype int) Token {
 	token := p.token
 	if p.token.ttype == ttype {
 		p.consume()
 	} else {
-		log.Fatalln("ERROR: Expecting", TokenTypeName(ttype), ", got", TokenTypeName(p.token.ttype))
+		log.Fatalln("ERROR (Parser.Match): Expecting", TokenTypeName(ttype), ", got", TokenTypeName(p.token.ttype))
 	}
 	return token
 }
@@ -44,15 +45,15 @@ func (p *Parser) consume() {
 
 func (p *Parser) patient(sen *Sentence) {
 	token := p.match(WORD)
-	sen.patient = token.text
+	sen.Patient = token.text
 }
 
 func (p *Parser) verb(sen *Sentence) {
 	token := p.match(WORD)
-	sen.verb = token.text
+	sen.Verb = token.text
 }
 
 func (p *Parser) focus(sen *Sentence) {
 	token := p.match(WORD)
-	sen.focus = token.text
+	sen.Focus = token.text
 }

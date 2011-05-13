@@ -1,6 +1,7 @@
 package salu
 
 import (
+	"log"
 	"strconv"
 )
 
@@ -14,6 +15,8 @@ func NewSalu() *Salu {
 	s.entities = make(map[string]Entity)
 	s.verbs = make(map[string][]Verb)
 
+	registerBuiltins(s)
+
 	e := make(PropertySet)
 	e["name"] = StringLiteral("Nathan")
 	s.entities["user"] = e
@@ -21,24 +24,50 @@ func NewSalu() *Salu {
 	return s
 }
 
-func (s *Salu) Eval(verb, patient, focus string) string {
-	p := s.interpretEntity(patient)
-	f := s.interpretEntity(focus)
+func (s *Salu) Eval(sen *Sentence) string {
+	p := s.interpretEntity(sen.Patient)
+	f := s.interpretEntity(sen.Focus)
 
-	handler, ok := s.interpretVerb(verb, p, f)
-	if ok {
-		result, err := handler.HandleVerb(p, f)
-		if err != nil {
-			return "ERROR: " + err.String()
-		} else {
-			return result.String()
+	for _, v := range s.verbs[sen.Verb] {
+		log.Println("Looking at verbs")
+		p, ok := s.getEntityAs(p, v.PatientType)
+		if !ok {
+			continue
 		}
+
+		f, ok := s.getEntityAs(f, v.FocusType)
+		if !ok {
+			continue
+		}
+
+		result, err := v.Handler.HandleVerb(p, f)
+		if err != nil {
+			return "ERROR (salu.Eval): " + err.String()
+		}
+		return result.String()
 	}
-	return "ERROR: the verb could not be interpereted"
+	return "ERROR (salu.Eval): no suitable verb implementation found for " + sen.Verb
+}
+
+func (s *Salu) getEntityAs(e Entity, etype string) (Entity, bool) {
+	log.Println(EntityType(e), "want a", etype)
+	ok := false
+	
+	switch etype {
+	case "NumberLiteral":
+		e, ok = e.(NumberLiteral)
+	case "StringLiteral":
+		e, ok = e.(StringLiteral)
+	case "PropertySet":
+		e, ok = e.(PropertySet)
+	case "EntityList":
+		e, ok = e.(EntityList)
+	}
+	return e, ok
 }
 
 // If an existing Entity is not found, then create Entity as a literal
-func (s *Salu) interpretEntity(estring string) Entity {
+func (s *Salu) interpretEntity(estring string) (Entity) {
 	e, ok := s.entities[estring]
 	if !ok {
 		// not a known Entity, is it a literal?

@@ -11,6 +11,7 @@ type Entity interface{
 type NumberLiteral int
 type StringLiteral string
 type PropertySet map[string]Entity
+type EntityList []Entity
 
 func EntityType(e Entity) (string) {
 	switch _ := e.(type) {
@@ -20,6 +21,8 @@ func EntityType(e Entity) (string) {
 		return "StringLiteral"
 	case PropertySet:
 		return "PropertySet"
+	case EntityList:
+		return "EntityList"
 	}
 
 	return "unknown"
@@ -34,6 +37,9 @@ func (s StringLiteral) String() string {
 }
 
 func (p PropertySet) String() string {
-	return "PropertySet"
-//	return fmt.Sprintf("%v", p)
+	return fmt.Sprintf("%v", p)
+}
+
+func (el EntityList) String() string {
+	return fmt.Sprintf("%v", el)
 }
