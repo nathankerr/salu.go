@@ -1,0 +1,27 @@
+/[tksmljnpdb][a][tksmljnpdb][uioe]/ {
+	// WORD: CNCV
+	// C [tksmljnpdb]
+	// V [uioe]
+	// N [a]
+	
+	lval.text = yylex.Text();
+	return WORD
+}
+
+/[0-9]+/ {
+	lval.text = yylex.Text();
+	return NUMBER
+}
+
+/[.]/ {
+	return STOP
+}
+
+/[ \n\r\t]/ {
+	// Eat up whitespace
+}
+//
+package salu
+
+// Build using git://github.com/blynn/nex.git
+// nex lexer.nex

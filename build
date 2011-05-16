@@ -1,4 +1,4 @@
 #!/bin/sh
 
 rm -f salu/_parser.go main y.output *.6
-gobuild -run
+gobuild

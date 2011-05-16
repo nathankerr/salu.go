@@ -4,10 +4,11 @@ package salu
 import (
 	"fmt"
 	"io"
+	"os"
 )
 
 type Parser struct {
-	lexer *lexer
+	lexer Lexer
 }
 
 var sen *sentence
@@ -23,22 +24,25 @@ var sen *sentence
 
 %token <text> WORD
 %token <text> STOP
-%token EOF
+%token <text> NUMBER
 
 %%
-sen: patient verb focus STOP
+sen: /*empty*/ {
+	os.Exit(0)
+}
+| patient verb focus STOP
 {
 	sen = &sentence{$1, $2, $3}
 	return 1
 }
-patient: WORD
+patient: WORD | NUMBER
 verb: WORD
-focus: WORD
+focus: WORD | NUMBER
 %%
 
 func NewParser(input io.Reader) *Parser {
 	p := new(Parser)
-	p.lexer = newLexer(input)
+	p.lexer = NewLexer(input)
 
 	return p
 }
