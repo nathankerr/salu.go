@@ -4,7 +4,7 @@ import (
 	"fmt"
 )
 
-type Entity interface{
+type Entity interface {
 	String() string
 }
 
@@ -13,7 +13,7 @@ type StringLiteral string
 type PropertySet map[string]Entity
 type EntityList []Entity
 
-func EntityType(e Entity) (string) {
+func EntityType(e Entity) string {
 	switch _ := e.(type) {
 	case NumberLiteral:
 		return "NumberLiteral"

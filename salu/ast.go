@@ -1,7 +1,7 @@
 package salu
 
-type Sentence struct {
-	Patient string
-	Verb string
-	Focus string
+type sentence struct {
+	patient string
+	verb    string
+	focus   string
 }

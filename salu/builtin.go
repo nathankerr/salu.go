@@ -19,5 +19,3 @@ type isa int
 func (is isa) HandleVerb(patient, focus Entity) (Entity, os.Error) {
 	return nil, nil
 }
-
-// Names an entity

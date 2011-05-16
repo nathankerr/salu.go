@@ -3,7 +3,6 @@ package salu
 import (
 	"fmt"
 	"io"
-	"log"
 	"strconv"
 )
 
@@ -32,17 +31,17 @@ func (s *Salu) Console(input io.Reader, output io.Writer) {
 	for {
 		sen := parser.Parse()
 
-		result := s.Eval(sen)
-		fmt.Fprintln(output, result)
+		result := s.eval(sen)
+		fmt.Fprintf(output, "> %v\n", result)
 	}
 }
 
-func (s *Salu) Eval(sen *Sentence) string {
-	p := s.interpretEntity(sen.Patient)
-	f := s.interpretEntity(sen.Focus)
+func (s *Salu) eval(sen *sentence) string {
+	p := s.interpretEntity(sen.patient)
+	f := s.interpretEntity(sen.focus)
 
-	for _, v := range s.verbs[sen.Verb] {
-		log.Println("Looking at verbs")
+	for _, v := range s.verbs[sen.verb] {
+		// log.Println("Looking at verbs")
 		p, ok := s.getEntityAs(p, v.PatientType)
 		if !ok {
 			continue
@@ -59,13 +58,12 @@ func (s *Salu) Eval(sen *Sentence) string {
 		}
 		return result.String()
 	}
-	return "ERROR (salu.Eval): no suitable verb implementation found for " + sen.Verb
+	return "ERROR (salu.Eval): no suitable verb implementation found for " + sen.verb
 }
 
 func (s *Salu) getEntityAs(e Entity, etype string) (Entity, bool) {
-	log.Println(EntityType(e), "want a", etype)
 	ok := false
-	
+
 	switch etype {
 	case "NumberLiteral":
 		e, ok = e.(NumberLiteral)
@@ -80,7 +78,7 @@ func (s *Salu) getEntityAs(e Entity, etype string) (Entity, bool) {
 }
 
 // If an existing Entity is not found, then create Entity as a literal
-func (s *Salu) interpretEntity(estring string) (Entity) {
+func (s *Salu) interpretEntity(estring string) Entity {
 	e, ok := s.entities[estring]
 	if !ok {
 		// not a known Entity, is it a literal?
