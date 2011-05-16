@@ -1,5 +1,10 @@
 package main
 
+import(
+	"os"
+)
+
 func main() {
-	yyParse(Lexer(0))
+	lexer := NewLexer(os.Stdin)
+	yyParse(lexer)
 }

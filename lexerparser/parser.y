@@ -8,12 +8,13 @@ import (
 
 %union
 {
-	node string
-	vvar int
+	text string
 }
 
-%token <vvar> VAR
+%token <text> WORD
+%token <text> STOP
+%token EOF
 
 %%
-sen: VAR | VAR sen
+sen: WORD STOP
 %%
