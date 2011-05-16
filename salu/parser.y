@@ -22,9 +22,8 @@ var sen *sentence
 
 %type <text> patient verb focus
 
-%token <text> WORD
-%token <text> STOP
-%token <text> NUMBER
+%token <text> WORD STOP NUMBER MODIFIER
+%left MODIFIER
 
 %%
 sen: /*empty*/ {
@@ -35,9 +34,21 @@ sen: /*empty*/ {
 	sen = &sentence{$1, $2, $3}
 	return 1
 }
-patient: WORD | NUMBER
+patient: WORD
+| patient MODIFIER WORD {
+	// FIXME: Pass all the data up
+	$$ = $1
+}
+| NUMBER
+
 verb: WORD
-focus: WORD | NUMBER
+
+focus: WORD
+| focus MODIFIER WORD {
+	//FIXME: Pass all the data up
+	$$ = $1
+}
+| NUMBER
 %%
 
 func NewParser(input io.Reader) *Parser {

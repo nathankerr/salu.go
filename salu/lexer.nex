@@ -8,6 +8,11 @@
 	return WORD
 }
 
+/[tksmljnpdb][uioe]/ {
+	lval.text = yylex.Text();
+	return MODIFIER
+}
+
 /[0-9]+/ {
 	lval.text = yylex.Text();
 	return NUMBER

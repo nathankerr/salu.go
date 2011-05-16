@@ -9,7 +9,7 @@ type family struct {
   a []dfa
   endcase int
 }
-var a0 [4]dfa
+var a0 [5]dfa
 var a []family
 func init() {
 a = make([]family, 1)
@@ -142,6 +142,83 @@ a0[0].f = fun[:]
 a0[0].id = 0
 }
 {
+var acc [3]bool
+var fun [3]func(int) int
+fun[0] = func(r int) int {
+  switch(r) {
+  case 107: return 1
+  case 111: return -1
+  case 115: return 1
+  case 100: return 1
+  case 108: return 1
+  case 112: return 1
+  case 116: return 1
+  case 101: return -1
+  case 105: return -1
+  case 109: return 1
+  case 117: return -1
+  case 98: return 1
+  case 106: return 1
+  case 110: return 1
+  default:
+    switch {
+    default: return -1
+    }
+  }
+  panic("unreachable")
+}
+acc[2] = true
+fun[2] = func(r int) int {
+  switch(r) {
+  case 107: return -1
+  case 111: return -1
+  case 115: return -1
+  case 100: return -1
+  case 108: return -1
+  case 112: return -1
+  case 116: return -1
+  case 101: return -1
+  case 105: return -1
+  case 109: return -1
+  case 117: return -1
+  case 98: return -1
+  case 106: return -1
+  case 110: return -1
+  default:
+    switch {
+    default: return -1
+    }
+  }
+  panic("unreachable")
+}
+fun[1] = func(r int) int {
+  switch(r) {
+  case 107: return -1
+  case 111: return 2
+  case 115: return -1
+  case 100: return -1
+  case 108: return -1
+  case 112: return -1
+  case 116: return -1
+  case 101: return 2
+  case 105: return 2
+  case 109: return -1
+  case 117: return 2
+  case 98: return -1
+  case 106: return -1
+  case 110: return -1
+  default:
+    switch {
+    default: return -1
+    }
+  }
+  panic("unreachable")
+}
+a0[1].acc = acc[:]
+a0[1].f = fun[:]
+a0[1].id = 1
+}
+{
 var acc [2]bool
 var fun [2]func(int) int
 fun[0] = func(r int) int {
@@ -165,9 +242,9 @@ fun[1] = func(r int) int {
   }
   panic("unreachable")
 }
-a0[1].acc = acc[:]
-a0[1].f = fun[:]
-a0[1].id = 1
+a0[2].acc = acc[:]
+a0[2].f = fun[:]
+a0[2].id = 2
 }
 {
 var acc [2]bool
@@ -193,9 +270,9 @@ fun[0] = func(r int) int {
   }
   panic("unreachable")
 }
-a0[2].acc = acc[:]
-a0[2].f = fun[:]
-a0[2].id = 2
+a0[3].acc = acc[:]
+a0[3].f = fun[:]
+a0[3].id = 3
 }
 {
 var acc [2]bool
@@ -227,11 +304,11 @@ fun[0] = func(r int) int {
   }
   panic("unreachable")
 }
-a0[3].acc = acc[:]
-a0[3].f = fun[:]
-a0[3].id = 3
+a0[4].acc = acc[:]
+a0[4].f = fun[:]
+a0[4].id = 4
 }
-a[0].endcase = 4
+a[0].endcase = 5
 a[0].a = a0[:]
 }
 func getAction(c *frame) int {
@@ -342,23 +419,28 @@ func (yylex Lexer) Lex(lval *yySymType) int {
 	lval.text = yylex.Text();
 	return WORD
 }
-    case 1:  //[0-9]+/
+    case 1:  //[tksmljnpdb][uioe]/
+{
+	lval.text = yylex.Text();
+	return MODIFIER
+}
+    case 2:  //[0-9]+/
 {
 	lval.text = yylex.Text();
 	return NUMBER
 }
-    case 2:  //[.]/
+    case 3:  //[.]/
 {
 	return STOP
 }
-    case 3:  //[ \n\r\t]/
+    case 4:  //[ \n\r\t]/
 {
 	// Eat up whitespace
 }
-    case 4:  ///
+    case 5:  ///
 // [END]
     }
   }
   return 0
 }
-// Build using git://github.com/blynn/nex.git
+// nex lexer.nex
