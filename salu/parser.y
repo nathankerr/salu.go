@@ -10,6 +10,8 @@ type Parser struct {
 	lexer *Lexer
 }
 
+var sentence *Sentence
+
 %}
 
 %union
@@ -17,16 +19,22 @@ type Parser struct {
 	text string
 }
 
+%type <text> patient verb focus
+
 %token <text> WORD
 %token <text> STOP
 %token EOF
 
 %%
-sen: WORD STOP
+sen: patient verb focus STOP
 {
-	fmt.Println("sentence", $1, $2)
+	fmt.Printf("sentence %#v %#v %#v\n", $1, $2, $3)
+	sentence = &Sentence{$1, $2, $3}
 	return 1
 }
+patient: WORD
+verb: WORD
+focus: WORD
 %%
 
 func NewParser(input io.Reader) *Parser {
@@ -37,7 +45,7 @@ func NewParser(input io.Reader) *Parser {
 }
 
 func (p *Parser) Parse() *Sentence {
-	sen := new(Sentence)
+	sentence = new(Sentence)
 	yyParse(p.lexer)
-	return sen
+	return sentence
 }

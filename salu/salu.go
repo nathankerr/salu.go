@@ -1,6 +1,8 @@
 package salu
 
 import (
+	"fmt"
+	"io"
 	"log"
 	"strconv"
 )
@@ -22,6 +24,17 @@ func NewSalu() *Salu {
 	s.entities["user"] = e
 
 	return s
+}
+
+func (s *Salu) Console(input io.Reader, output io.Writer) {
+	parser := NewParser(input)
+
+	for {
+		sen := parser.Parse()
+
+		result := s.Eval(sen)
+		fmt.Fprintln(output, result)
+	}
 }
 
 func (s *Salu) Eval(sen *Sentence) string {

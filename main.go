@@ -1,7 +1,6 @@
 package main
 
 import (
-	"io"
 	"log"
 	"net"
 	"os"
@@ -10,14 +9,7 @@ import (
 
 var s *salu.Salu
 
-func main() {
-	log.SetFlags(log.Lshortfile)
-	setup()
-	console(os.Stdin, os.Stdout)
-	//telnetlistener("localhost:3000")
-}
-
-func setup() {
+func main() {	
 	s = salu.NewSalu()
 
 	// register a stringadder
@@ -27,21 +19,12 @@ func setup() {
 	// register a numberadder
 	var na numberadder
 	s.RegisterVerb("malu", na, "NumberLiteral", "NumberLiteral")
+
+	s.Console(os.Stdin, os.Stdout)
+	//telnetlistener(s, "localhost:3000")
 }
 
-func console(input io.Reader, output io.Writer) {
-	parser := salu.NewParser(input)
-
-	for {
-		sen := parser.Parse()
-		log.Println(sen)
-
-		// result := s.Eval(sen)
-		// fmt.Fprintln(output, result)
-	}
-}
-
-func telnetlistener (addr string) {
+func telnetlistener (s *salu.Salu, addr string) {
 	laddr, err := net.ResolveTCPAddr("tcp", addr)
 	if err != nil {
 		panic(err)
@@ -60,6 +43,6 @@ func telnetlistener (addr string) {
 			continue
 		}
 
-		go console(c, c)
+		go s.Console(c, c)
 	}
 }
