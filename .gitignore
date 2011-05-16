@@ -1,2 +1,4 @@
 *.6
 *.8
+salu/_parser.go
+y.output

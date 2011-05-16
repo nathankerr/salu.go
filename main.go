@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"io"
 	"log"
 	"net"
@@ -12,6 +11,7 @@ import (
 var s *salu.Salu
 
 func main() {
+	log.SetFlags(log.Lshortfile)
 	setup()
 	console(os.Stdin, os.Stdout)
 	//telnetlistener("localhost:3000")
@@ -33,12 +33,11 @@ func console(input io.Reader, output io.Writer) {
 	parser := salu.NewParser(input)
 
 	for {
-		fmt.Fprintf(output, "> ")
 		sen := parser.Parse()
 		log.Println(sen)
 
-		result := s.Eval(sen)
-		fmt.Fprintln(output, result)
+		// result := s.Eval(sen)
+		// fmt.Fprintln(output, result)
 	}
 }
 
