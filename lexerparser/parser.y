@@ -17,4 +17,8 @@ import (
 
 %%
 sen: WORD STOP
+{
+	fmt.Println("sentence", $1, $2)
+	return 1
+}
 %%
